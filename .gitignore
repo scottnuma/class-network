@@ -1,0 +1,5 @@
+*.swp
+graph/__pycache__/
+graph/migrations/__pycache__/
+website/__pycache__/
+
