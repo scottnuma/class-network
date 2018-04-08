@@ -1,5 +1,7 @@
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
+from django.core.serializers.json import DjangoJSONEncoder
 from django.views import generic
+from django.shortcuts import render
 
 from .models import Department, Course, User, Enrollment
 
@@ -40,5 +42,21 @@ class EnrollmentView(generic.DetailView):
     model = Enrollment
     template_name = 'graph/enrollment.html'
 
+class SimpleJSONEncoder(DjangoJSONEncoder):
+    def default(self, obj):
+        class_list = [User, Course, Enrollment]
+        obj_is_a = lambda c: isinstance(obj, c)
+        if any([obj_is_a(override_class) for override_class in class_list]):
+            return str(obj)
+        return super().default(obj)
+
+def graph_json(request):
+    result = Enrollment.graph_json()
+    return JsonResponse(Enrollment.graph_json(), encoder=SimpleJSONEncoder)
+
+def graph(request):
+    return render(request, 'graph/graph.html')
+
 def index(request):
     return HttpResponse("Hello, world. You're at the graph index.")
+

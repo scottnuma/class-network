@@ -1,5 +1,7 @@
 from django.db import models
 
+import networkx as nx
+
 MAX_TEXT_LENGTH = 256
 
 class Department(models.Model):
@@ -30,3 +32,15 @@ class Enrollment(models.Model):
 
     def __str__(self):
         return str(self.user) + " in " + str(self.course)
+
+    def graph():
+        """Return a networkx graph of relations."""
+        all_edges = Enrollment.objects.all()
+        graph = nx.Graph()
+        for edge in all_edges:
+            graph.add_edge(edge.user, edge.course)
+        return graph
+
+    def graph_json():
+        """Return a JSON string of the graph of enrollment."""
+        return nx.node_link_data(Enrollment.graph())
