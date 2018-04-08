@@ -42,7 +42,31 @@ var circle = svg.append("g")  // add a g element to the svg
     .attr("r", 10)            // define circle attributes
     .attr("fill", "red")   
     .attr("stroke", "#fff")   
-    .attr("stroke-width", "3px");   
+    .attr("stroke-width", "3px")
+
+    // implement draggable nodes with the help of  Miek Bostock
+    // https://bl.ocks.org/mbostock/2675ff61ea5e063ede2b5d63c08020c7
+    .call(d3.drag()
+      .on("start", dragstarted)
+      .on("drag", dragged)
+      .on("end", dragended));   
+
+function dragstarted(d) {
+    if (!d3.event.active) simulation.alphaTarget(0.3).restart();
+    d.fx = d.x;
+    d.fy = d.y;
+}
+
+function dragged(d) {
+    d.fx = d3.event.x;
+    d.fy = d3.event.y;
+}
+
+function dragended(d) {
+    if (!d3.event.active) simulation.alphaTarget(0);
+    d.fx = null;
+    d.fy = null;
+}
 
 var text = svg.append("g")
   .attr("class", "labels")
