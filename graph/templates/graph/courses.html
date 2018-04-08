@@ -1,0 +1,9 @@
+{% if course_list %}
+{% for course in course_list %}
+<a href="{% url 'graph:course' course.id %}">
+<div>{{ course.department }} {{ course.code }} - {{ course.name }}</div>
+</a>
+{% endfor %}
+{% else %}
+<div>No courses are available</div>
+{% endif %}
