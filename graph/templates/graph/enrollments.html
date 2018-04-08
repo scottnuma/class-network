@@ -1,10 +1,18 @@
-Enrollments
-{% if enrollment_list %}
-{% for enrollment in enrollment_list %}
-<div>
-  <a href="{% url 'graph:user' enrollment.user.id %}">{{ enrollment.user }}</a> is taking <a href="{% url 'graph:course' enrollment.course.id %}">{{ enrollment.course }}</a>
-</div>
-{% endfor %}
-{% else %}
-No enrollments to display.
-{% endif %}
+{% extends "graph/base.html" %}
+
+{% block title %}
+  Enrollments
+{% endblock %}
+
+{% block content %}
+  Enrollments
+  {% if enrollment_list %}
+    {% for enrollment in enrollment_list %}
+      <div>
+        <a href="{% url 'graph:user' enrollment.user.id %}">{{ enrollment.user }}</a> is taking <a href="{% url 'graph:course' enrollment.course.id %}">{{ enrollment.course }}</a>
+      </div>
+    {% endfor %}
+  {% else %}
+    No enrollments to display.
+  {% endif %}
+{% endblock %}

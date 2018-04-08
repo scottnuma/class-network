@@ -58,5 +58,5 @@ def graph(request):
     return render(request, 'graph/graph.html')
 
 def index(request):
-    return HttpResponse("Hello, world. You're at the graph index.")
+    return render(request, 'graph/index.html')
 

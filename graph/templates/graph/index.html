@@ -1,0 +1,13 @@
+{% extends "graph/base.html" %}
+
+{% block title %}
+index.html
+{% endblock %}
+
+{% block content %}
+<div>Hello world!</div>
+<div><a href="{% url 'graph:graph' %}">Graph</a></div>
+<div><a href="{% url 'graph:enrollments' %}">Enrollments</a></div>
+<div><a href="{% url 'graph:departments' %}">Departments</a></div>
+<div><a href="{% url 'graph:courses' %}">Courses</a></div>
+{% endblock %}

@@ -1,1 +1,9 @@
-{{ user.name }} - {{ user.email }}
+{% extends "graph/base.html" %}
+
+{% block title %}
+index.html
+{% endblock %}
+
+{% block content %}
+{{ user.name }}
+{% endblock %}
