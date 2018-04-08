@@ -13,5 +13,5 @@ urlpatterns = [
     path('enrollment/<int:pk>/', views.EnrollmentView.as_view(), name='enrollment'),
     path('enrollment/', views.EnrollmentsView.as_view(), name='enrollments'),
     path('graph/', views.graph, name='graph'),
-    path('graph.json', views.graph_json, name='enrollment graph json'),
+    path('graph.json', views.graph_json, name='graph json'),
 ]

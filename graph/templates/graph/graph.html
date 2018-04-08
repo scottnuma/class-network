@@ -1,114 +1,97 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<style>
-
-.links line {
-  stroke: #999;
-  stroke-opacity: 0.6;
-}
-
-.nodes circle {
-  stroke: #fff;
-  stroke-width: 1.5px;
-}
-
-</style>
 <svg width="960" height="600"></svg>
 <script src="https://d3js.org/d3.v4.min.js"></script>
 <script>
+  
+// D3 Force Graph base written by Tom Roth
+// http://www.puzzlr.org/force-directed-graph-minimal-working-example/
 
-d3.json("/graph.json", function(error, graph) {
-    if (error) throw error;
+// Load the enrollment data as a JSON
+d3.json("{% url 'graph:graph json' %}", function(error, graph) {
+  if (error) throw error;
 
-//create somewhere to put the force directed graph
 var svg = d3.select("svg"),
-    width = +svg.attr("width"),
-    height = +svg.attr("height");
-    
+  width = +svg.attr("width"),
+  height = +svg.attr("height");
+
+var links_data = graph.links
 var nodes_data = graph.nodes;
 
-//set up the simulation 
-//nodes only for now 
-var simulation = d3.forceSimulation()
-					//add nodes
-					.nodes(nodes_data);	
-                    
-//add forces
-//we're going to add a charge to each node 
-//also going to add a centering force
-simulation
-    .force("charge_force", d3.forceManyBody())
-    .force("center_force", d3.forceCenter(width / 2, height / 2));
+// draw the links, then circles, then text
+// so that the text is on top and links are on bottom
 
-//draw circles for the nodes 
-var circle = svg.append("g")      // add a g element to the svg
-        .attr("class", "nodes") // the g element should have the class "nodes"
-        .selectAll("circle")    // 
-        .data(nodes_data)       // allow us to store information in a node
-        .enter()                // for each element of data, do the following 
-        .append("circle")       
-        .attr("r", 5)
-        .attr("fill", "red");   // make it red
+var link = svg.append("g")
+  .attr("class", "links")
+  .selectAll("line")
+  .data(links_data)
+  .enter().append("line")
+    .attr("stroke-width", 3)        
+    .attr("stroke", "#999");        
+
+// we separate text and labels into different g elements 
+// created with the help of Mike Bostock
+// https://stackoverflow.com/questions/11102795/d3-node-labeling
+          
+var circle = svg.append("g")  // add a g element to the svg
+  .attr("class", "nodes")     // the g element should have the class "nodes"
+  .selectAll("circle")        // create a group of circle elements
+  .data(nodes_data)           // associate nodes_data with group
+  .enter()                    // for each element of data, do the following 
+    .append("circle")         // create a circle element
+    .attr("r", 10)            // define circle attributes
+    .attr("fill", "red")   
+    .attr("stroke", "#fff")   
+    .attr("stroke-width", "3px");   
 
 var text = svg.append("g")
   .attr("class", "labels")
   .selectAll("text")
   .data(nodes_data)
   .enter()
-  .append("text")
-  .attr("dx", 12)
-  .attr("dy", ".35em")
-  .text(function(d) {return d.id});
+    .append("text")
+    .attr("dx", 12)                   // set the offset for the text from circle
+    .attr("dy", "1em")              
+    .text(function(d) {return d.id}); // the text of each text elem to the 
+                                      // elem's data id
+ 
+// Customize how links between nodes push and pull
+// http://www.puzzlr.org/force-directed-graph-link-forces/
+var link_force =  d3.forceLink(links_data)
+  .id(function(d) { return d.id; })
+  .distance(100);
 
-        
-//add tick instructions: 
-simulation.on("tick", tickActions );
+// set up the simulation 
+// http://www.puzzlr.org/force-graphs-with-d3/
+var simulation = d3.forceSimulation()
+  .nodes(nodes_data)	
+  .force("charge_force", d3.forceManyBody().strength(-100))
+  .force("center_force", d3.forceCenter(width / 2, height / 2))
+  .force("links", link_force);
 
+// on each tick of the simulation, do the following
+simulation.on("tick", tickUpdates );
 
-//Time for the links 
+// update circle positions each tick of the simulation 
+function tickUpdates() {
+  circle.attr("transform", transform);
 
-//Create links data 
-var links_data = graph.links
+  // the normal setting of cx and cy doesn't work for text
+  text.attr("transform", transform);
+      
+  // update both ends of link position
+  link
+    .attr("x1", function(d) { return d.source.x; })
+    .attr("y1", function(d) { return d.source.y; })
+    .attr("x2", function(d) { return d.target.x; })
+    .attr("y2", function(d) { return d.target.y; });
+}                    
 
-
-
-//Create the link force 
-//We need the id accessor to use named sources and targets 
-
-var link_force =  d3.forceLink(links_data).id(function(d) { return d.id; })
-
-//Add a links force to the simulation
-//Specify links  in d3.forceLink argument   
-simulation.force("links",link_force)
-
-//draw lines for the links 
-var link = svg.append("g")
-      .attr("class", "links")
-    .selectAll("line")
-    .data(links_data)
-    .enter().append("line")
-      .attr("stroke-width", 2);        
-
+// transform method taken from Mike Bostock
+// http://bl.ocks.org/mbostock/1153292
 function transform(d) {
     return "translate(" + d.x + "," + d.y + ")";
 }
-
-function tickActions() {
-    //update circle positions each tick of the simulation 
-
-    circle.attr("transform", transform);
-    text.attr("transform", transform);
-        
-    //update link positions 
-    //simply tells one end of the line to follow one node around
-    //and the other end of the line to follow the other node around
-    link
-        .attr("x1", function(d) { return d.source.x; })
-        .attr("y1", function(d) { return d.source.y; })
-        .attr("x2", function(d) { return d.target.x; })
-        .attr("y2", function(d) { return d.target.y; });
-  }                    
-
 
 })
 </script>
