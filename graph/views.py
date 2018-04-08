@@ -59,4 +59,3 @@ def graph(request):
 
 def index(request):
     return render(request, 'graph/index.html')
-

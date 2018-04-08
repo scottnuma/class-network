@@ -5,6 +5,13 @@ index.html
 {% endblock %}
 
 {% block content %}
+
+{% if user.is_authenticated %}
+  <div>Current User: {{ user.username }} <a href="{% url 'logout' %}">logout</a></div>
+{% else %}
+  <a href="{% url 'social:begin' 'google-oauth2' %}">Login with Google</a><br>
+{% endif %}
+
 <div>Hello world!</div>
 <div><a href="{% url 'graph:graph' %}">Graph</a></div>
 <div><a href="{% url 'graph:enrollments' %}">Enrollments</a></div>

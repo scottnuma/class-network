@@ -2,4 +2,6 @@
 graph/__pycache__/
 graph/migrations/__pycache__/
 website/__pycache__/
+google_keys.json
+db.sqlite3
 
