@@ -1,11 +1,12 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 import networkx as nx
 
 MAX_TEXT_LENGTH = 256
 
 class Department(models.Model):
-    name = models.CharField(max_length=MAX_TEXT_LENGTH)
+    name = models.CharField(max_length=MAX_TEXT_LENGTH, unique=True)
 
     def __str__(self):
         return self.name
@@ -16,19 +17,18 @@ class Course(models.Model):
     name = models.CharField(max_length=MAX_TEXT_LENGTH)
     website = models.CharField(max_length=MAX_TEXT_LENGTH)
 
+    class Meta:
+        unique_together = ("department", "code")
+
     def __str__(self):
         return str(self.department) + " " + str(self.code)
-
-class User(models.Model):
-    name = models.CharField(max_length=MAX_TEXT_LENGTH)
-    email = models.CharField(max_length=MAX_TEXT_LENGTH)
-
-    def __str__(self):
-        return self.name
 
 class Enrollment(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ("user", "course")
 
     def __str__(self):
         return str(self.user) + " in " + str(self.course)
