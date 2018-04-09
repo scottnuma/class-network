@@ -5,6 +5,7 @@ Departments
 {% endblock %}
 
 {% block content %}
+  <div><a href="{% url 'graph:department new' %}">Create new department</a></div>
   {% if department_list %}
     {% for department in department_list %}
       <div><a href="{% url 'graph:department' department.id %}">{{ department.name }}</a></div>

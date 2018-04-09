@@ -5,6 +5,7 @@ Courses
 {% endblock %}
 
 {% block content %}
+  <div><a href="{% url 'graph:course new' %}">Create new course</a></div>
   {% if course_list %}
     {% for course in course_list %}
       <div>

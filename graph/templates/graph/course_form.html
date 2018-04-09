@@ -1,0 +1,15 @@
+{% extends "graph/base.html" %}
+
+{% block title %}
+New Course
+{% endblock %}
+
+{% block content %}
+{{ user }}
+{{ user.is_authenticated }}
+  <form method="POST">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Okay</button>
+  </form>
+{% endblock %}

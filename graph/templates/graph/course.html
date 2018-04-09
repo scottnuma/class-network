@@ -9,4 +9,15 @@
   {{ course.code }}</div>
 <div>{{ course.name }}</div>
 <div><a href="{{ course.website }}">Course Website</a></div>
+<div>Entered by {{ course.creator }}</div>
+  <form action="/enrollment/new/" method="POST">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Enroll</button>
+  </form>
+  <form action="/enrollment/delete/" method="POST">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Unenroll</button>
+  </form>
 {% endblock %}
