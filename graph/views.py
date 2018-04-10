@@ -46,9 +46,16 @@ class CoursesView(generic.ListView):
 def course(request, pk):
     course = get_object_or_404(Course, pk=pk)
     data = {'course':course.id}
-    form = EnrollmentForm(initial=data)
-    context = {'course' : course, 'form':form}
+    form = EnrollmentForm(initial={'course':course.id})
+    enrolled = user_enrolled_in_course(request.user, course)
+    context = {'course' : course, 'form':form, 'enrolled':enrolled}
     return render(request, 'graph/course.html', context)
+
+def user_enrolled_in_course(user, course):
+    if user.is_anonymous:
+        return False
+    all_enrollment_records = Enrollment.objects.all()
+    return all_enrollment_records.filter(user=user, course=course).exists()
     
 @login_required(login_url=GOOGLE_LOGIN_URL)
 def course_new(request):
@@ -86,6 +93,7 @@ def enrollment_new(request):
         form = EnrollmentForm(request.POST)
         if form.is_valid():
             enrollment = form.save(commit=False)
+            course = enrollment.course
             enrollment.user = request.user
             try:
                 enrollment.save()
@@ -94,7 +102,7 @@ def enrollment_new(request):
                 context = {'course' : enrollment.course, 'form':form}
                 return render(request, 'graph/course.html', context)
             else:
-                return redirect('graph:course', pk=enrollment.course.id)
+                return redirect('graph:course', pk=course.id)
         else:
             # context = {'course' : form.cleaned_data['course'], 'form':form}
             return render(request, 'graph:index')
@@ -105,19 +113,31 @@ def enrollment_delete(request):
         form = EnrollmentForm(request.POST)
         if form.is_valid():
             form_result = form.save(commit=False)
+            course = form_result.course
+            enrolled = user_enrolled_in_course(request.user, course)
+            context = {
+                    'course' : course, 
+                    'form':form,
+                    'enrolled':enrolled
+                    }
             try:
-                enrollment = Enrollment.objects.get(pk=form_result.course.id, 
-                    user=request.user)
+                enrollment = Enrollment.objects.get(course=course.id, user=request.user)
             except Enrollment.DoesNotExist:
                 form.add_error('course', 'Not enrolled')
-                context = {'course' : form_result.course, 'form':form}
                 return render(request, 'graph/course.html', context)
             else:
                 enrollment.delete()
-                return redirect('graph:course', pk=enrollment.course.id)
+                return redirect('graph:course', pk=course.id)
         else:
-            context = {'course' : form.cleaned_data['course'], 'form':form}
+
+            import ipdb; ipdb.set_trace()
+            course = form.data.get('course', 0)
+            data = {'course':course.id}
+            form = EnrollmentForm(initial=data)
+            context = {'course' : course, 'form':form}
             return render(request, 'graph/course.html', context)
+    else:
+        return HttpResponse("hmm")
 
 class SimpleJSONEncoder(DjangoJSONEncoder):
     def default(self, obj):

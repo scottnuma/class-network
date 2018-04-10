@@ -16,5 +16,5 @@ class EnrollmentForm(ModelForm):
     class Meta:
         model = Enrollment
         fields = ['course']
-        widgets = {'course': HiddenInput()}
+        # widgets = {'course': HiddenInput()}
 
