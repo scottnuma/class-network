@@ -30,7 +30,7 @@ def department_new(request):
             department = form.save(commit=False)
             department.creator = request.user
             department.save()
-            return redirect('department', pk=department.pk)
+            return redirect('graph:department', pk=department.pk)
     else:
         form = DepartmentForm()
     context = {'form':form, 'object':'Department'}
