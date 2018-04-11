@@ -7,7 +7,6 @@
 {% block content %}
 <div><a href="{% url 'graph:department' course.department.id %}">{{ course.department }}</a> 
   {{ course.code }} - {{ course.name }}</div>
-<div><a href="{{ course.website }}">Course Website</a></div>
 <div>Entered by {{ course.creator }}</div>
 
 <div>Enrolled: {{ enrolled }}</div>
@@ -19,6 +18,6 @@
 {% endif %}
     {% csrf_token %}
     {{ form.as_p }}
-    <button type="submit">{% if enrolled %}Unenroll{% else %}Enroll {% endif %}</button>
+    <button type="submit" class="btn btn-primary">{% if enrolled %}Unenroll{% else %}Enroll {% endif %}</button>
   </form>
 {% endblock %}
